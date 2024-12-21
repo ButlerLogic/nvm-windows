@@ -39,4 +39,5 @@ bin/nvm/*
 
 !.gitignore
 !.gitattributes
+!.github
 tests

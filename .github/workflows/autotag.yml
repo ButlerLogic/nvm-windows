@@ -1,0 +1,47 @@
+name: Autotag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  autotag:
+    runs-on: ubuntu-latest
+
+    outputs:
+      tag_name: ${{ steps.create_tag.outputs.tag_name}}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Identify version
+      id: read_version
+      run: |
+        cd .\src
+        echo identifying version...
+        VERSION=$(jq -r '.version' manifest.json)
+        echo "::set-output name=version::$VERSION"
+        cd ..\
+
+    - name: Check if tag exists
+      id: check_tag
+      run: |
+        VERSION=${{ steps.read_version.outputs.version }}
+        if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          echo "Tag v$VERSION already exists."
+          echo "::set-output name=tag_exists::true"
+        else
+          echo "Tag v$VERSION does not exist."
+          echo "::set-output name=tag_exists::false"
+        fi
+
+    - name: Create tag
+      if: steps.check_tag.outputs.tag_exists == 'false'
+      id: create_tag
+      run: |
+        VERSION=${{ steps.read_version.outputs.version }}
+        git tag "v$VERSION"
+        git push origin "v$VERSION"
+        echo "v$VERSION tag created."
