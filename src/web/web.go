@@ -23,6 +23,7 @@ import (
 	fs "github.com/coreybutler/go-fsutil"
 )
 
+var nvmversion = ""
 var client = &http.Client{}
 var nodeBaseAddress = "https://nodejs.org/dist/"
 var npmBaseAddress = "https://github.com/npm/cli/archive/"
@@ -130,8 +131,7 @@ func Download(url string, target string, version string) bool {
 		return false
 	}
 
-	// TODO: Add version to user agent
-	req.Header.Set("User-Agent", "NVM for Windows")
+	req.Header.Set("User-Agent", fmt.Sprintf("NVM for Windows %s", nvmversion))
 
 	response, err := client.Do(req)
 	if err != nil {
@@ -166,7 +166,7 @@ func Download(url string, target string, version string) bool {
 	} else {
 		_, err = io.Copy(output, response.Body)
 		if err != nil {
-			fmt.Println("Error while downloading", url, "-", err)
+			fmt.Printf("Error while downloading %s: %v\n", url, err)
 		}
 	}
 
@@ -230,12 +230,6 @@ func GetNodeJS(root string, v string, a string, append bool) bool {
 			vpre = "win-x64/"
 		} else {
 			vpre = "x64/"
-		}
-	} else if a == "arm64" {
-		if main > 0 {
-			vpre = "win-arm64/"
-		} else {
-			vpre = "arm64/"
 		}
 	}
 
@@ -360,38 +354,14 @@ func IsNode64bitAvailable(v string) bool {
 	return true
 }
 
-func IsNodeArm64bitAvailable(v string) bool {
-	if v == "latest" {
-		return true
-	}
-
-	// Anything below version 19.9 doesn't have a arm64 bit version
-	vers := strings.Fields(strings.Replace(v, ".", " ", -1))
-	main, _ := strconv.ParseInt(vers[0], 0, 0)
-	minor, _ := strconv.ParseInt(vers[1], 0, 0)
-	fmt.Println("main "+ strconv.FormatInt(main,10) + " minor "+strconv.FormatInt(minor,10))
-	if main < 19 {
-		return false
-	}
-	if main == 19 && minor < 9{
-		return false
-	}
-	
-	// TODO: fixme. Assume a 64 bit version exists
-	return true
-}
-
 func getNodeUrl(v string, vpre string, arch string, append bool) string {
 	a := "x86"
-	if arch == "arm64" {
-		a = "arm64"
-	}
 	if arch == "64" {
 		a = "x64"
 	}
 
 	//url := "http://nodejs.org/dist/v"+v+"/" + vpre + "/node.exe"
-	url := GetFullNodeUrl("v" + v + "/" + vpre + "node.exe")
+	url := GetFullNodeUrl("v" + v + "/" + vpre + "/node.exe")
 
 	if !append {
 		version, err := semver.Make(v)
