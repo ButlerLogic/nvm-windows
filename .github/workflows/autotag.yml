@@ -20,11 +20,11 @@ jobs:
     - name: Identify version
       id: read_version
       run: |
-        cd .\src
+        cd ./src
         echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
         echo "::set-output name=version::$VERSION"
-        cd ..\
+        cd ../
 
     - name: Check if tag exists
       id: check_tag
