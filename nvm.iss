@@ -77,11 +77,8 @@ var
   PreText: TLabel;
 
 function GetCurrentYear(Param: String): String;
-var
-  Year: String;
 begin
-  GetDateTimeString(Year, 'yyyy', Now, '');
-  Result := Year;
+  result := GetDateTimeString('yyyy', '-', ':');
 end;
 
 function IsDirEmpty(dir: string): Boolean;
