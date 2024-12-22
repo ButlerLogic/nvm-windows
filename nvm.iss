@@ -18,7 +18,7 @@ PrivilegesRequired=admin
 AppId={#MyAppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-AppCopyright=Copyright (C) 2018-2024 Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
+AppCopyright=Copyright (C) 2018-{code:GetCurrentYear} Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
 AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
@@ -40,8 +40,8 @@ ArchitecturesInstallIn64BitMode=x64 ia64
 UninstallDisplayIcon={app}\{#MyIcon}
 
 ; Version information
-VersionInfoVersion={#MyAppVersion}
-VersionInfoCopyright=Copyright © 2024 Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
+VersionInfoVersion={#MyAppVersion}.0
+VersionInfoCopyright=Copyright © {code:GetCurrentYear} Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
 VersionInfoCompany=Author Software Inc.
 VersionInfoDescription=Node.js version manager for Windows
 VersionInfoProductName={#MyAppShortName}
@@ -75,6 +75,14 @@ var
   EmailEdit: TEdit;
   EmailLabel: TLabel;
   PreText: TLabel;
+
+function GetCurrentYear(Param: String): String;
+var
+  Year: String;
+begin
+  GetDateTimeString(Year, 'yyyy', '', '');
+  Result := Year;
+end;
 
 function IsDirEmpty(dir: string): Boolean;
 var
