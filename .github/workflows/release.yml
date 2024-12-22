@@ -260,7 +260,8 @@ jobs:
         Write-Host "Available build tools:"
         dir ${{ github.workspace }}\assets\buildtools
 
-        ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
+        # ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
+        iscc "$iss" "/o$distros"
       shell: pwsh
 
     - name: Sign Installer
