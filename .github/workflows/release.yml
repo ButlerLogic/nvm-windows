@@ -222,7 +222,9 @@ jobs:
           exit 1
         }
 
-        ${{ github.workspace }}\assets\buildtools\iscc "$iss" "/o$distros"
+        dir ${{ github.workspace }}\assets\buildtools
+
+        ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
       shell: pwsh
 
     - name: Sign Installer
