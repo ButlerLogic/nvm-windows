@@ -13,6 +13,7 @@ jobs:
     env:
       GO_VERSION: 1.23
       QUIKGO_VERSION: 1.2.6
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
     - name: Checkout code
@@ -119,7 +120,7 @@ jobs:
       run: |
         $repoOwner = "author"
         $repoName = "author-nvm"
-        $token = ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is provided as a secret
+        $token = $env:GITHUB_TOKEN # Ensure the token is provided as a secret
 
         # Fetch the latest release information
         $releaseInfo = curl -H "Authorization: token $token" \
