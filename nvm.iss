@@ -452,7 +452,7 @@ begin
   end;
 end;
 
-function GetNotificationString: string;
+function GetNotificationString(): String;
 begin
   Result := '--test-param';
   ; Result := '';
