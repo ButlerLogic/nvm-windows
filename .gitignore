@@ -34,6 +34,7 @@ bin/*.exe
 bin/*.log
 bin/LICENSE
 !bin/buildtools/*
+!assets/buildtools/*
 bin/*.zip
 bin/nvm/*
 
