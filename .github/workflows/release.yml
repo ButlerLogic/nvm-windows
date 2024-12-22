@@ -19,21 +19,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Cache GitHub CLI
-      uses: actions/cache@v3
-      with:
-        path: C:\Program Files\Git\gh
-        key: gh-cli-${{ runner.os }}-v2.39.0
-
-    - name: Install GitHub CLI (if not cached)
-      run: |
-        if (!(Test-Path "C:\Program Files\Git\gh\gh.exe")) {
-          choco install gh -y
-        }
-
-    - name: Authenticate GitHub CLI
-      run: echo $env:GITHUB_TOKEN | gh auth login --with-token
-
     - name: Extract Tag from Event
       id: extract_tag
       shell: pwsh
@@ -125,25 +110,33 @@ jobs:
         timestamp-rfc3161: http://timestamp.acs.microsoft.com
         timestamp-digest: SHA256
 
-    - name: Identify Latest Author-NVM Bridge App
+    - name: Identify & Download Latest Author-NVM Bridge App (Using GitHub API)
       id: get_release
       run: |
-        $latestRelease = gh release list --repo author/author-nvm --limit 1 --json tagName --jq ".[0].tagName"
-        echo "release=$latestRelease" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $releaseTag = "latest"  # Or you can dynamically fetch this tag
+        $repoOwner = "author"
+        $repoName = "author-nvm"
+        $token = ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is provided as a secret
 
-    - name: Download Latest Author-NVM Bridge App
-      run: |
-        if (-not $env:release) {
-          Write-Error "Release version not set"
+        # Fetch the latest release information
+        $releaseInfo = curl -H "Authorization: Bearer $token" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            https://api.github.com/repos/$repoOwner/$repoName/releases/tags/$releaseTag
+
+        # Extract asset ID from the release information
+        $assetId = $releaseInfo.assets | ConvertFrom-Json | Where-Object { $_.name -eq 'author-nvm.exe' } | Select-Object -First 1 -ExpandProperty id
+
+        if ($assetId) {
+          # Download the asset using GitHub API
+          $assetDownloadUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/assets/$assetId"
+          curl -L -H "Authorization: Bearer $token" \
+               -H "Accept: application/octet-stream" \
+               -o "$env:GITHUB_WORKSPACE\bin\author-nvm.exe" \
+               $assetDownloadUrl
+        } else {
+          Write-Error "Asset 'author-nvm.exe' not found."
           exit 1
         }
-
-        $assetId = gh release view $env:release --repo author/author-nvm --json assets --jq ".assets | map(select(.name == 'author-nvm.exe')) | .[0].id"
-        if (-not $assetId) {
-          Write-Error "No asset 'author-nvm.exe' found in the release"
-          exit 1
-        }
-        gh release download $env:release --repo author/author-nvm --pattern "author-nvm.exe" --dir ./bin
 
     - name: Generate Core Assets
       run: |
