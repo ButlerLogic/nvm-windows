@@ -299,6 +299,9 @@ jobs:
         if [ -f "$GITHUB_EVENT_PATH" ]; then
           # Try to get the head SHA from workflow_run
           COMMIT_SHA=$(jq -r '.head_commit.id' < "$GITHUB_EVENT_PATH")
+          if [ "$COMMIT_SHA" = "null" ]; then
+            COMMIT_SHA=$(jq -r '.workflow_run.head_commit.id' < "$GITHUB_EVENT_PATH")
+          fi
           if [ -z "$COMMIT_SHA" ] || [ "$COMMIT_SHA" = "null" ]; then
             echo "Error: Unable to retrieve commit SHA from GITHUB_EVENT_PATH"
             cat "$GITHUB_EVENT_PATH"
