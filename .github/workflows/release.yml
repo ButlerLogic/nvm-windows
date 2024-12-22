@@ -222,11 +222,33 @@ jobs:
           exit 1
         }
 
-        Write-Host "Available assets in .tmp directory:"
-        dir ${{ github.workspace }}\.tmp
+        # Get the files and directories in the source directory
+        $items = Get-ChildItem -Path $source -Recurse
+        $source = "${{ github.workspace }}\.tmp"
+        $destination = "${{ github.workspace }}\bin"
+
+        foreach ($item in $items) {
+            # Construct the target path
+            $target = $item.FullName -replace [regex]::Escape($source), [regex]::Escape($destination)
+
+            if ($item.PSIsContainer) {
+                # Create directories if they don't exist
+                if (-not (Test-Path -Path $target)) {
+                    New-Item -ItemType Directory -Path $target
+                }
+            } else {
+                # Copy files if they don't already exist
+                if (-not (Test-Path -Path $target)) {
+                    Copy-Item -Path $item.FullName -Destination $target
+                }
+            }
+        }
 
         Write-Host "Available assets in bin directory:"
         dir ${{ github.workspace }}\bin
+
+        Write-Host "Available assets in .tmp directory:"
+        dir ${{ github.workspace }}\.tmp
 
         Write-Host "Available build tools:"
         dir ${{ github.workspace }}\assets\buildtools
