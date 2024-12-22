@@ -497,6 +497,6 @@ Type: files; Name: "{app}\elevate.cmd";
 Type: files; Name: "{app}\elevate.vbs";
 Type: files; Name: "{app}\nodejs.ico";
 Type: files; Name: "{app}\settings.txt";
-Type: dir; Name: "{userappdata}\.nvm";
-Type: dir; Name: "{app}";
+Type: filesanddirs; Name: "{userappdata}\.nvm";
+Type: filesanddirs; Name: "{app}";
 Type: regkey; Name: "HKCR\Software\{#MyAppShortName}";
