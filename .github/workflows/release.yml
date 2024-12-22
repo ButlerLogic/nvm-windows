@@ -226,6 +226,9 @@ jobs:
         $version = ${{ env.TAG }} -replace "^v", ""
         (Get-Content -Path $iss) -replace "{{VERSION}}", $version | Set-Content -Path $iss
 
+        # Output the file to assure replacements worked
+        Get-Content $iss
+
         # Get the files and directories in the source directory
         $items = Get-ChildItem -Path $source -Recurse
         $source = "${{ github.workspace }}\.tmp"
