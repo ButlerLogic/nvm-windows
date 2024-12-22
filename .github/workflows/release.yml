@@ -81,11 +81,16 @@ jobs:
       run: |
         go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
 
+    - name: Confirm QuikGo Installation
+      run: qgo version
+
     - name: Build NVM for Windows
       run: |
+        cd src
         qgo build --profile=release
         echo ${{ github.workspace }}\bin
         dir ${{ github.workspace }}\bin
+        cd ..\
 
     - name: Compress Executables
       uses: crazy-max/ghaction-upx@v3
