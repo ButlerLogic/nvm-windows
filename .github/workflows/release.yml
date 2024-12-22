@@ -58,6 +58,10 @@ jobs:
       with:
         go-version: '${{ env.GO_VERSION }}'
 
+    - name: Install QuikGo
+      run: |
+        go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
+
     - name: Cache Go Modules
       uses: actions/cache@v3
       with:
@@ -76,10 +80,6 @@ jobs:
         key: ${{ runner.os }}-qgo-${{ env.QUIKGO_VERSION }}
         restore-keys: |
           ${{ runner.os }}-qgo-
-
-    - name: Install QuikGo
-      run: |
-        go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
 
     - name: Confirm QuikGo Installation
       run: qgo version
