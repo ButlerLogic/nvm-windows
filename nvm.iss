@@ -454,17 +454,18 @@ end;
 
 function GetNotificationString: string;
 begin
-  Result := '';
-  if NotificationOptionPage.Values[0] then
-    Result := Result + '--lts ';
-  if NotificationOptionPage.Values[1] then
-    Result := Result + '--current ';
-  if NotificationOptionPage.Values[2] then
-    Result := Result + '--nvm4w ';
-  if NotificationOptionPage.Values[3] then
-    Result := Result + '--author ';
-  // Trim the trailing space
-  Result := Trim(Result);
+  Result := '--test-param';
+  ; Result := '';
+  ; if NotificationOptionPage.Values[0] then
+  ;   Result := Result + '--lts ';
+  ; if NotificationOptionPage.Values[1] then
+  ;   Result := Result + '--current ';
+  ; if NotificationOptionPage.Values[2] then
+  ;   Result := Result + '--nvm4w ';
+  ; if NotificationOptionPage.Values[3] then
+  ;   Result := Result + '--author ';
+  ; // Trim the trailing space
+  ; Result := Trim(Result);
 end;
 
 function getSymLink(o: string): string;
