@@ -36,7 +36,7 @@ Compression=lzma
 SolidCompression=yes
 ChangesEnvironment=yes
 DisableProgramGroupPage=yes
-ArchitecturesInstallIn64BitMode=x64 ia64
+ArchitecturesInstallIn64BitMode=x64
 UninstallDisplayIcon={app}\{#MyIcon}
 
 ; Version information
