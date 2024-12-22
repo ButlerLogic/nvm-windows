@@ -1,7 +1,7 @@
 #define MyAppName "NVM for Windows"
 #define MyAppShortName "nvm"
 #define MyAppLCShortName "nvm"
-#define MyAppVersion "{{VERSION}}"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "Author Software Inc."
 #define MyAppURL "https://github.com/coreybutler/nvm-windows"
 #define MyAppExeName "nvm.exe"
@@ -40,7 +40,7 @@ ArchitecturesInstallIn64BitMode=x64
 UninstallDisplayIcon={app}\{#MyIcon}
 
 ; Version information
-VersionInfoVersion={{VERSION}}.0
+VersionInfoVersion=1.2.0.0
 VersionInfoCopyright=Copyright © {code:GetCurrentYear} Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
 VersionInfoCompany=Author Software Inc.
 VersionInfoDescription=Node.js version manager for Windows
@@ -452,7 +452,7 @@ begin
   end;
 end;
 
-function GetNotificationString(): String;
+function GetNotificationString(Param: String): String;
 begin
   Result := 'register ';
   if NotificationOptionPage.Values[0] then
@@ -483,10 +483,10 @@ end;
 
 [Run]
 Filename: "{app}\nvm.exe"; Parameters: "{code:GetNotificationString}"; Flags: postinstall runhidden;
-Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: runhidden;
+Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: postinstall runhidden;
 
 [UninstallRun]
-Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden;
+Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden; RunOnceId: "UnregisterNVMForWindows";
 
 [UninstallDelete]
 Type: files; Name: "{app}\nvm.exe";
