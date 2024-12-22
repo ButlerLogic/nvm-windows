@@ -40,6 +40,7 @@ ArchitecturesInstallIn64BitMode=x64 ia64
 UninstallDisplayIcon={app}\{#MyIcon}
 
 ; Version information
+VersionInfoVersion={MyAppVersion}.0
 VersionInfoCopyright=Copyright © {code:GetCurrentYear} Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
 VersionInfoCompany=Author Software Inc.
 VersionInfoDescription=Node.js version manager for Windows
@@ -497,6 +498,6 @@ Type: files; Name: "{app}\elevate.cmd";
 Type: files; Name: "{app}\elevate.vbs";
 Type: files; Name: "{app}\nodejs.ico";
 Type: files; Name: "{app}\settings.txt";
-Type: filesanddirs; Name: "{userappdata}\.nvm";
-Type: filesanddirs; Name: "{app}";
+Type: dirs; Name: "{userappdata}\.nvm";
+Type: dirs; Name: "{app}";
 Type: regkey; Name: "HKCR\Software\{#MyAppShortName}";

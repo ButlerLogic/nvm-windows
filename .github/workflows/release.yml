@@ -222,6 +222,10 @@ jobs:
           exit 1
         }
 
+        # Replace version placeholder in the .iss file
+        $version = ${{ env.TAG }} -replace "^v", ""
+        (Get-Content -Path $iss) -replace "{{VERSION}}", $version | Set-Content -Path $iss
+
         # Get the files and directories in the source directory
         $items = Get-ChildItem -Path $source -Recurse
         $source = "${{ github.workspace }}\.tmp"
