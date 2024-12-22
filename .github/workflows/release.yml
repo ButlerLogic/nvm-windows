@@ -117,28 +117,46 @@ jobs:
     - name: Identify & Download Latest Author-NVM Bridge App (Using GitHub API)
       id: get_release
       run: |
-        $releaseTag = "latest"  # Or you can dynamically fetch this tag
         $repoOwner = "author"
         $repoName = "author-nvm"
         $token = ${{ secrets.GITHUB_TOKEN }}  # Ensure the token is provided as a secret
 
         # Fetch the latest release information
-        $releaseInfo = curl -H "Authorization: Bearer $token" \
+        $releaseInfo = curl -H "Authorization: token $token" \
                             -H "Accept: application/vnd.github.v3+json" \
-                            https://api.github.com/repos/$repoOwner/$repoName/releases/tags/$releaseTag
+                            https://api.github.com/repos/$repoOwner/$repoName/releases
+                            | ConvertFrom-Json
 
-        # Extract asset ID from the release information
-        $assetId = $releaseInfo.assets | ConvertFrom-Json | Where-Object { $_.name -eq 'author-nvm.exe' } | Select-Object -First 1 -ExpandProperty id
+        if ($releaseInfo -and $releaseInfo[0].tag_name) {
+          $releaseTag = $releaseInfo[0].tag_name
+          Write-Host "Latest release tag identified: $releaseTag"
 
-        if ($assetId) {
-          # Download the asset using GitHub API
-          $assetDownloadUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/assets/$assetId"
-          curl -L -H "Authorization: Bearer $token" \
-               -H "Accept: application/octet-stream" \
-               -o "$env:GITHUB_WORKSPACE\bin\author-nvm.exe" \
-               $assetDownloadUrl
+          # Fetch the release details for the identified tag
+          $releaseDetails = curl -H "Authorization: token $token" \
+                                 -H "Accept: application/vnd.github.v3+json" \
+                                 https://api.github.com/repos/$repoOwner/$repoName/releases/tags/$releaseTag
+                                 | ConvertFrom-Json
+
+          #Extract asset ID for author-nvm.exe
+          $asset = $releaseDetails.assets | Where-Object { $_.name -eq 'author-nvm.exe' } | Select-Object -First 1
+
+          if ($asset -and $asset.id) {
+            $assetId = $asset.id
+            Write-Host "Asset ID for author-nvm.exe: $assetId"
+            echo "ASSET_ID=$assetId" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+            # Download asset
+            $assetDownloadUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/assets/$assetId"
+            curl -L -H "Authorization: token $token" \
+                 -H "Accept: application/octet-stream" \
+                 -o "$env:GITHUB_WORKSPACE\bin\author-nvm.exe" \
+                 $assetDownloadUrl
+          } else {
+            Write-Error "author-nvm.exe not found in the latest release."
+            exit 1
+          }
         } else {
-          Write-Error "Asset 'author-nvm.exe' not found."
+          Write-Error "author-nvm.exe not found in the latest release."
           exit 1
         }
 
