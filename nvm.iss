@@ -486,7 +486,7 @@ Filename: "{app}\nvm.exe"; Parameters: "{code:GetNotificationString}"; Flags: po
 Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: runhidden;
 
 [UninstallRun]
-Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden;
+Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden; RunOnceId: "UnregisterNVMForWindows";
 
 [UninstallDelete]
 Type: files; Name: "{app}\nvm.exe";
