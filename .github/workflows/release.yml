@@ -93,13 +93,13 @@ jobs:
         dir ${{ github.workspace }}\bin
         cd ..\
 
-    - name: Compress Executables
-      uses: crazy-max/ghaction-upx@v3
-      with:
-        version: latest
-        files: |
-          ${{ github.workspace }}/bin/*.exe
-        args: --brute
+    # - name: Compress Executables
+    #   uses: crazy-max/ghaction-upx@v3
+    #   with:
+    #     version: latest
+    #     files: |
+    #       ${{ github.workspace }}/bin/*.exe
+    #     args: --brute
 
     # - name: Sign Executables
     #   uses: azure/trusted-signing-action@v0.5.0
@@ -202,15 +202,15 @@ jobs:
         $hash.Hash | Out-File -FilePath $checksum -Encoding utf8
       shell: pwsh
 
-    - name: Install Inno Setup
-      run: |
-        choco install innosetup -y
+    # - name: Install Inno Setup
+    #   run: |
+    #     choco install innosetup -y
 
-        # Verify installation
-        if (!(Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) {
-          Write-Error "Inno Setup installation failed."
-          exit 1
-        }
+    #     # Verify installation
+    #     if (!(Test-Path "C:\Program Files (x86)\Inno Setup 6\ISCC.exe")) {
+    #       Write-Error "Inno Setup installation failed."
+    #       exit 1
+    #     }
 
     - name: Generate Installer
       run: |
@@ -260,8 +260,8 @@ jobs:
         Write-Host "Available build tools:"
         dir ${{ github.workspace }}\assets\buildtools
 
-        # ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
-        iscc "$iss" "/o$distros"
+        ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
+        # iscc "$iss" "/o$distros"
       shell: pwsh
 
     - name: Sign Installer
