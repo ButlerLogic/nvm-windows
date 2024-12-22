@@ -80,7 +80,7 @@ function GetCurrentYear(Param: String): String;
 var
   Year: String;
 begin
-  GetDateTimeString(Year, 'yyyy', '', '');
+  GetDateTimeString(Year, 'yyyy', Now, '');
   Result := Year;
 end;
 
