@@ -452,7 +452,7 @@ begin
   end;
 end;
 
-function GetNotificationString(): String;
+function GetNotificationString(Param: String): String;
 begin
   Result := 'register ';
   if NotificationOptionPage.Values[0] then
