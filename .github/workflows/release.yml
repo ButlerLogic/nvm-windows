@@ -222,6 +222,9 @@ jobs:
           exit 1
         }
 
+        Write-Host "Available assets in .tmp directory:"
+        dir ${{ github.workspace }}\.tmp
+
         Write-Host "Available assets in bin directory:"
         dir ${{ github.workspace }}\bin
 
