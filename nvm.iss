@@ -452,7 +452,7 @@ begin
   end;
 end;
 
-function GetNotificationParameters: string;
+function GetNotificationString: string;
 begin
   Result := '';
   if NotificationOptionPage.Values[0] then
@@ -483,7 +483,7 @@ begin
 end;
 
 [Run]
-Filename: "{app}\nvm.exe"; Parameters: "register {code:GetNotificationParameters}"; Flags: runhidden;
+Filename: "{app}\nvm.exe"; Parameters: "register {code:GetNotificationString}"; Flags: runhidden;
 Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: runhidden;
 
 [UninstallRun]
