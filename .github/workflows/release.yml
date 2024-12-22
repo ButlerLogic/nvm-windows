@@ -81,7 +81,7 @@ jobs:
           ${{ runner.os }}-qgo-
 
     - name: Confirm QuikGo Installation
-      run: qgo version
+      run: qgo --version
 
     - name: Build NVM for Windows
       run: |
@@ -280,9 +280,10 @@ jobs:
         if [ -f "$GITHUB_EVENT_PATH" ]; then
           # Try to get the head SHA from workflow_run
           COMMIT_SHA=$(jq -r '.head_commit.id' < "$GITHUB_EVENT_PATH")
-          if [ -z "$COMMIT_SHA" ]; then
+          if [ -z "$COMMIT_SHA" ] || [ "$COMMIT_SHA" = "null" ]; then
             echo "Error: Unable to retrieve commit SHA from GITHUB_EVENT_PATH"
             cat "$GITHUB_EVENT_PATH"
+            echo "HEAD: $(git rev-parse HEAD)"
             exit 1
           fi
           echo "Commit SHA: $COMMIT_SHA"
@@ -321,6 +322,8 @@ jobs:
           echo "No tag to delete."
           exit 1
         fi
+
+
 
         RELEASE_ID=$(gh release view "$TAG" --json id --jq '.id' || echo "")
         if [ -n "$RELEASE_ID" ]; then
