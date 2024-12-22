@@ -222,6 +222,10 @@ jobs:
           exit 1
         }
 
+        Write-Host "Available assets in bin directory:"
+        dir ${{ github.workspace }}\bin
+
+        Write-Host "Available build tools:"
         dir ${{ github.workspace }}\assets\buildtools
 
         ${{ github.workspace }}\assets\buildtools\iscc.exe "$iss" "/o$distros"
