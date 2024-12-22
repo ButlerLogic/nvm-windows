@@ -40,7 +40,7 @@ ArchitecturesInstallIn64BitMode=x64 ia64
 UninstallDisplayIcon={app}\{#MyIcon}
 
 ; Version information
-VersionInfoVersion={MyAppVersion}.0
+VersionInfoVersion={{VERSION}}.0
 VersionInfoCopyright=Copyright © {code:GetCurrentYear} Author Software Inc., Ecor Ventures LLC, Corey Butler, and contributors.
 VersionInfoCompany=Author Software Inc.
 VersionInfoDescription=Node.js version manager for Windows
