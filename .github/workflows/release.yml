@@ -123,16 +123,18 @@ jobs:
         $token = $env:GITHUB_TOKEN # Ensure the token is provided as a secret
 
         # Fetch the latest release information
+        Write-Host "GET https://api.github.com/repos/$repoOwner/$repoName/releases"
         $response = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoOwner/$repoName/releases" `
-                                      -Headers @{ Authorization = "token $token"; Accept = "application/vnd.github.v3+json" }
+                                      -Headers @{ Authorization = "Bearer $token"; Accept = "application/vnd.github.v3+json"; X-GitHub-Api-Version = "2022-11-28" }
 
         if ($response -and $response[0].tag_name) {
             $releaseTag = $response[0].tag_name
             Write-Host "Latest release tag identified: $releaseTag"
 
             # Fetch the release details for the identified tag
+            Write-Host "GET https://api.github.com/repos/$repoOwner/$repoName/releases/tags/$releaseTag"
             $releaseDetails = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoOwner/$repoName/releases/tags/$releaseTag" `
-                                                -Headers @{ Authorization = "token $token"; Accept = "application/vnd.github.v3+json" }
+                                                -Headers @{ Authorization = "Bearer $token"; Accept = "application/vnd.github.v3+json"; X-GitHub-Api-Version = "2022-11-28" }
 
             # Extract asset ID for author-nvm.exe
             $asset = $releaseDetails.assets | Where-Object { $_.name -eq 'author-nvm.exe' } | Select-Object -First 1
@@ -144,8 +146,9 @@ jobs:
 
                 # Download asset
                 $assetDownloadUrl = "https://api.github.com/repos/$repoOwner/$repoName/releases/assets/$assetId"
+                Write-Host "GET $assetDownloadUrl"
                 Invoke-WebRequest -Uri $assetDownloadUrl `
-                                  -Headers @{ Authorization = "token $token"; Accept = "application/octet-stream" } `
+                                  -Headers @{ Authorization = "Bearer $token"; Accept = "application/octet-stream"; X-GitHub-Api-Version = "2022-11-28" } `
                                   -OutFile "$env:GITHUB_WORKSPACE\bin\author-nvm.exe"
             } else {
                 Write-Error "author-nvm.exe not found in the latest release."
