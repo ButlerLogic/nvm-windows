@@ -450,15 +450,20 @@ begin
       RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', path);
     end;
   end;
+
   if CurStep = ssDone then
   begin
-    email := Trim(EmailEdit.Text);
-    if email <> '' then
+    if GetEmail() <> '' then
     begin
-      nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + email;
+      nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + GetEmail();
       Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     end;
   end;
+end;
+
+function GetEmail(Param: String): String;
+begin
+  Result := Trim(EmailEdit.Text);
 end;
 
 function GetNotificationString(Param: String): String;
