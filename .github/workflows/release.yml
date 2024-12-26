@@ -111,7 +111,7 @@ jobs:
         $resourceHackerPath = "$env:USERPROFILE\resource_hacker\ResourceHacker.exe"
         $exe = "${{ github.workspace }}\bin\nvm.exe"
         $iconFile = "${{ github.workspace }}\assets\nvm.ico"
-        ${{ github.workspace }}\assets\buildtools\ResourceHacker.exe -open $exe -save $exe -action add -res $iconFile -mask ICONGROUP,MAINICON
+        $resourceHackerPath -open $exe -save $exe -action add -res $iconFile -mask ICONGROUP,MAINICON
 
     - name: Sign Executables
       uses: azure/trusted-signing-action@v0.5.0

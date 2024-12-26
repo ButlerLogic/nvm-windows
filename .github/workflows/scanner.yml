@@ -1,0 +1,48 @@
+name: Virus Scan
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get latest release details
+      id: get_latest_release
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: latestRelease } = await github.rest.repos.getLatestRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+          core.setOutput('tag', latestRelease.tag_name);
+          core.setOutput('assets', JSON.stringify(latestRelease.assets));
+
+    - name: Download release assets
+      env:
+        ASSETS_JSON: ${{ steps.get_latest_release.outputs.assets }}
+      run: |
+        echo "Assets: $ASSETS_JSON"
+        for asset in $(echo $ASSETS_JSON | jq -r '.[].browser_download_url'); do
+          echo "Downloading $asset"
+          curl -L -O "$asset"
+        done
+
+    - name: List downloaded assets
+      run: ls -alh ./
+
+    - name: Scan with VirusTotal
+      uses: crazy-max/ghaction-virustotal@v4
+      with:
+        vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        files: |
+          *.exe
+          .exe$
+        update_release_body: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        request_rate: 4

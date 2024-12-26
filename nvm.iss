@@ -449,6 +449,16 @@ begin
       StringChangeEx(path,';;',';',True);
       RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', path);
     end;
+
+  else if CurStep = ssDone then
+    begin
+      email := Trim(EmailEdit.Text);
+      if email <> '' then
+      begin
+        nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + email;
+        Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand. '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      end;
+    end;
   end;
 end;
 
@@ -483,7 +493,7 @@ end;
 
 [Run]
 Filename: "{app}\nvm.exe"; Parameters: "{code:GetNotificationString}"; Flags: postinstall runhidden;
-Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: runhidden;
+Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: postinstall runhidden;
 
 [UninstallRun]
 Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden; RunOnceId: "UnregisterNVMForWindows";
