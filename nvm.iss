@@ -449,14 +449,14 @@ begin
       StringChangeEx(path,';;',';',True);
       RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', path);
     end;
-
+  end;
   else if CurStep = ssDone then
     begin
       email := Trim(EmailEdit.Text);
       if email <> '' then
       begin
         nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + email;
-        Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand. '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
       end;
     end;
   end;
