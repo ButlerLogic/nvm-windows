@@ -453,7 +453,7 @@ begin
 
   if CurStep = ssDone then
   begin
-    if GetEmail() <> '' then
+    if GetEmail('') <> '' then
     begin
       nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + GetEmail();
       Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
@@ -461,7 +461,7 @@ begin
   end;
 end;
 
-function GetEmail(): String;
+function GetEmail(Param: String): String;
 begin
   Result := Trim(EmailEdit.Text);
 end;
