@@ -106,7 +106,7 @@ jobs:
         Invoke-WebRequest -Uri "https://www.angusj.com/resourcehacker/resource_hacker.zip" -OutFile "resource_hacker.zip"
         Expand-Archive -Path "resource_hacker.zip" -DestinationPath "$env:USERPROFILE\resource_hacker"
 
-    - name: Add icon to executable
+    - name: Apply icon to executable
       run: |
         $resourceHackerPath = "$env:USERPROFILE\resource_hacker\ResourceHacker.exe"
         $exe = "${{ github.workspace }}\bin\nvm.exe"
