@@ -461,7 +461,7 @@ begin
   end;
 end;
 
-function GetEmail(Param: String): String;
+function GetEmail(): String;
 begin
   Result := Trim(EmailEdit.Text);
 end;
