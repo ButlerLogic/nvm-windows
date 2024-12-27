@@ -409,6 +409,8 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   path: string;
+  email: string;
+  nvmcommand: string;
 begin
   if CurStep = ssPostInstall then
   begin
@@ -453,7 +455,8 @@ begin
 
   if CurStep = ssDone then
   begin
-    if Trim(EmailEdit.Text) <> '' then
+    email := Trim(EmailEdit.Text);
+    if email <> '' then
     begin
       nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + Trim(EmailEdit.Text);
       Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
