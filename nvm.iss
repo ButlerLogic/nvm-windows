@@ -411,6 +411,7 @@ var
   path: string;
   email: string;
   nvmcommand: string;
+  ResultCode: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
@@ -459,14 +460,17 @@ begin
     if email <> '' then
     begin
       nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + Trim(EmailEdit.Text);
-      Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      if not Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+      begin
+        // Handle error
+       MsgBox('Error executing command email signup command.', mbError, MB_OK);
+      end else if ResultCode <> 0 then
+      begin
+        // Handle non-zero exit code
+        MsgBox('Newsletter signup failed with code: ' + IntToStr(ResultCode), mbError, MB_OK);
+      end;
     end;
   end;
-end;
-
-function GetEmail(Param: String): String;
-begin
-  Result := Trim(EmailEdit.Text);
 end;
 
 function GetNotificationString(Param: String): String;
