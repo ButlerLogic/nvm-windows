@@ -32,10 +32,10 @@ jobs:
         VERSION=${{ steps.read_version.outputs.version }}
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
           echo "Tag $VERSION already exists."
-          echo "::set-output name=tag_exists::true"
+          echo "tag_exists=true" >> $GITHUB_ENV
         else
           echo "Tag $VERSION does not exist."
-          echo "::set-output name=tag_exists::false"
+          echo "tag_exists=false" >> $GITHUB_ENV
         fi
 
     - name: Create tag
@@ -45,6 +45,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ steps.read_version.outputs.version }}
+        tag_prefix: ""
 
     - name: Display Tag
       if: success()
