@@ -24,6 +24,7 @@ jobs:
         echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
         echo "version=$VERSION" >> $GITHUB_ENV
+        echo "Version: $VERSION"
         cd ../
 
     - name: Check if tag exists
