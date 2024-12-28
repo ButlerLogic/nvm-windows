@@ -23,7 +23,7 @@ jobs:
         cd ./src
         echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
-        echo "::set-output name=version::$VERSION"
+        echo "version=$VERSION" >> $GITHUB_ENV
         cd ../
 
     - name: Check if tag exists
@@ -38,6 +38,11 @@ jobs:
           echo "tag_exists=false" >> $GITHUB_ENV
         fi
 
+    - name: test
+      run: |
+        echo ${{ steps.check_tag.outputs.tag_exists }}
+        echo ${{ steps.check_tag.outputs.tag_exists }} == 'false'
+
     - name: Create tag
       if: steps.check_tag.outputs.tag_exists == 'false'
       id: create_tag
@@ -48,7 +53,7 @@ jobs:
         tag_prefix: ""
 
     - name: Display Tag
-      if: success()
+      if: steps..create_tag.outputs.new_tag != ''
       run: |
         echo "Tag created: ${{ steps.create_tag.outputs.new_tag }}"
       # run: |
