@@ -14,7 +14,6 @@ jobs:
       id-token: write
       contents: write
       attestations: write
-      release: write
 
     env:
       GO_VERSION: 1.23
