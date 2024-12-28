@@ -36,7 +36,7 @@ jobs:
 
     - name: Extract Main Executables
       run: |
-        7z x *.zip -o./
+        unzip nvm-noinstall.zip -d ./
 
     - name: List downloaded assets
       run: ls -alh ./
@@ -48,22 +48,25 @@ jobs:
         vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
         github_token: ${{ secrets.GITHUB_TOKEN }}
         file_globs: |
-          *.exe
-          *.zip
+          nvm.exe
+          author-nvm.exe
+          nvm-setup.exe
 
     - name: Generate release notes
       id: release_notes
       run: |
         input_list="${{ steps.scan.outputs.results }}"
-        notes="<br/>:bulb: **Antivirus Report**<br/><br/>"
+        notes="<br/>:bulb: **Antivirus Report**<br/><ul>"
 
         # Process each item in the list
         IFS=',' read -ra ITEMS <<< "$input_list"
         for item in "${ITEMS[@]}"; do
           filename=$(echo "$item" | cut -d'/' -f1)
           id=$(echo "$item" | cut -d'/' -f2)
-          notes="${notes}- [${filename}](https://www.virustotal.com/gui/file-analysis/${id})<br/>"
+          notes="${notes}<li><a href='https://www.virustotal.com/gui/file-analysis/${id}'>${filename}</a></li>"
         done
+
+        notes="${notes}</ul>"
 
         # Output the result
         echo "Generated Notes:"
