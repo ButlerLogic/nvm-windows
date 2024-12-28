@@ -53,7 +53,7 @@ jobs:
         tag_prefix: ""
 
     - name: Display Tag
-      if: steps..create_tag.outputs.new_tag != ''
+      if: steps.create_tag.outputs.new_tag != ''
       run: |
         echo "Tag created: ${{ steps.create_tag.outputs.new_tag }}"
       # run: |
