@@ -318,6 +318,16 @@ jobs:
         $hash.Hash | Out-File -FilePath $checksum -Encoding utf8
       shell: pwsh
 
+    - name: Attestation
+      uses: actions/attest-build-provenance@v2
+      id: attest
+      with:
+        subject-path: |
+          ${{ github.workspace }}/.dist/*.exe
+          ${{ github.workspace }}/.dist/*.zip
+          ${{ github.workspace }}/.dist/*.checksum.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Release
       uses: softprops/action-gh-release@v2
       if: success()
@@ -330,16 +340,10 @@ jobs:
         prerelease: false
         draft: false
         make_latest: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Attestation
-      uses: actions/attest-build-provenance@v2
-      with:
-        subject-path: |
-          ${{ github.workspace }}/.dist/*.exe
-          ${{ github.workspace }}/.dist/*.zip
-          ${{ github.workspace }}/.dist/*.checksum.txt
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        append_body: true
+        body: |
+          ### :lock: Attestation Report
+          [View the Attestation Report](${{ steps.attest.outputs.attestation-url }})
 
   rollback:
     runs-on: ubuntu-latest
