@@ -75,4 +75,5 @@ jobs:
         echo "tag_name=${{ env.version }}" >> $GITHUB_ENV  # Set the tag_name for later use in the workflow
 
     - name: Output tag name
-      run: echo "Tag created: ${{ env.version }}"
+      run: |
+        echo "Tag created: ${{ env.version }}"
