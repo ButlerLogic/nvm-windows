@@ -85,11 +85,15 @@ jobs:
 
     - name: Install QuikGo
       run: |
-        if !(go list -m github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}); then
-          go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
-        else
+        if (-not (go list -m github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }})) {
+          if (-not (go list -m github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }})) {
+            go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
+          } else {
+            echo "QuikGo version ${{ env.QUIKGO_VERSION }} already installed."
+          }
+        } else {
           echo "QuikGo version ${{ env.QUIKGO_VERSION }} already installed."
-        fi
+        }
 
     - name: Confirm QuikGo Installation
       run: qgo --version
