@@ -14,6 +14,9 @@
     "nvm/web.nvmversion": "manifest.version"
   },
   "minify": true,
+  "scripts": {
+    "pkg": "..\\build\\installer.go"
+  },
   "default_profiles": [
     "dev"
   ],

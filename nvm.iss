@@ -37,7 +37,7 @@ SolidCompression=yes
 ChangesEnvironment=yes
 DisableProgramGroupPage=yes
 ArchitecturesInstallIn64BitMode=x64
-UninstallDisplayIcon={app}\{#MyIcon}
+UninstallDisplayIcon={#ProjectRoot}\{#MyIcon}
 
 ; Version information
 VersionInfoVersion={{VERSION}}.0
@@ -305,6 +305,30 @@ begin
   EmailEdit.Text := ''; // Default value
 end;
 
+function LastPos(const SubStr, S: string): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := Length(S) downto 1 do
+  begin
+    if Copy(S, I, Length(SubStr)) = SubStr then
+    begin
+      Result := I;
+      Exit;
+    end;
+  end;
+end;
+
+function IsValidEmail(const Email: string): Boolean;
+var
+  AtPos, DotPos: Integer;
+begin
+  AtPos := Pos('@', Email);
+  DotPos := LastPos('.', Email);
+  Result := (AtPos > 1) and (DotPos > AtPos + 1) and (DotPos < Length(Email));
+end;
+
 function NextButtonClick(CurPageID: Integer): Boolean;
 var
   Email: string;
@@ -333,10 +357,14 @@ begin
   if CurPageID = EmailPage.ID then
   begin
     Email := Trim(EmailEdit.Text); // Remove leading/trailing spaces
-    if (Email <> '') and not ((Pos('@', Email) > 1) and (Pos('.', Email) > Pos('@', Email) + 1)) then
+    if (Email <> '') and not IsValidEmail(Email) then
     begin
       MsgBox('Please enter a valid email address or leave the field blank.', mbError, MB_OK);
       Result := False; // Prevent navigation to the next page
+    end
+    else
+    begin
+      WizardForm.NextButton.Enabled := True; // Allow navigation to the next page
     end;
   end;
 
@@ -409,9 +437,6 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   path: string;
-  email: string;
-  nvmcommand: string;
-  ResultCode: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
@@ -454,36 +479,27 @@ begin
     end;
   end;
 
-  if CurStep = ssDone then
-  begin
-    email := Trim(EmailEdit.Text);
-    if email <> '' then
-    begin
-      nvmCommand := ExpandConstant('{app}\nvm.exe') + 'author newsletter --notify ' + Trim(EmailEdit.Text);
-      if not Exec(ExpandConstant('{cmd}'), '/C ' + nvmCommand, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-      begin
-        // Handle error
-       MsgBox('Error executing command email signup command.', mbError, MB_OK);
-      end else if ResultCode <> 0 then
-      begin
-        // Handle non-zero exit code
-        MsgBox('Newsletter signup failed with code: ' + IntToStr(ResultCode), mbError, MB_OK);
-      end;
-    end;
-  end;
 end;
 
 function GetNotificationString(Param: String): String;
 begin
-  Result := 'register ';
+  Result := ' subscribe';
   if NotificationOptionPage.Values[0] then
-    Result := Result + '--lts ';
+  begin
+    Result := Result + ' --lts';
+  end;
   if NotificationOptionPage.Values[1] then
-    Result := Result + '--current ';
+  begin
+    Result := Result + ' --current';
+  end;
   if NotificationOptionPage.Values[2] then
-    Result := Result + '--nvm4w ';
+  begin
+    Result := Result + ' --nvm4w';
+  end;
   if NotificationOptionPage.Values[3] then
-    Result := Result + '--author ';
+  begin
+    Result := Result + ' --author';
+  end;
   Result := Trim(Result);
 end;
 
@@ -502,12 +518,24 @@ begin
   Result := Length(nodeInUse) > 0;
 end;
 
+function isEmailSupplied(): boolean;
+begin
+  Result := Trim(EmailEdit.Text) <> '';
+end;
+
+function GetEmailRegistrationString(Param: String): string;
+begin
+  Result := ' author newsletter --notify ' + Trim(EmailEdit.Text);
+end;
+
 [Run]
-Filename: "{app}\nvm.exe"; Parameters: "{code:GetNotificationString}"; Flags: postinstall runhidden;
-Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: postinstall runhidden;
+Filename: "{app}\nvm.exe"; Parameters: "{code:GetNotificationString}"; Flags: waituntilidle runhidden;
+Filename: "{app}\nvm.exe"; Parameters: "{code:GetEmailRegistrationString}"; Check: isEmailSupplied; Flags: waituntilidle runhidden;
+Filename: "{cmd}"; Parameters: "/C ""mklink /D ""{code:getSymLink}"" ""{code:getCurrentVersion}"""" "; Check: isNodeAlreadyInUse; Flags: waituntilidle runhidden;
+Filename: "powershell.exe"; Parameters: "-NoExit -Command Write-Host 'Welcome to NVM for Windows v{{VERSION}}'"; Description: "Open with Powershell"; Flags: postinstall skipifsilent;
 
 [UninstallRun]
-Filename: "{app}\nvm.exe"; Parameters: "unregister --lts --current --nvm4w --author"; Flags: runhidden; RunOnceId: "UnregisterNVMForWindows";
+Filename: "{app}\nvm.exe"; Parameters: "unsubscribe --lts --current --nvm4w --author"; Flags: runhidden; RunOnceId: "UnregisterNVMForWindows";
 
 [UninstallDelete]
 Type: files; Name: "{app}\nvm.exe";

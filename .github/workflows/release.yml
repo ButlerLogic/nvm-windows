@@ -10,6 +10,11 @@ jobs:
   build:
     runs-on: windows-latest
 
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+
     env:
       GO_VERSION: 1.23
       QUIKGO_VERSION: 1.2.6
@@ -312,6 +317,15 @@ jobs:
         $hash = Get-FileHash -Path $distro -Algorithm MD5
         $hash.Hash | Out-File -FilePath $checksum -Encoding utf8
       shell: pwsh
+
+    - name: Attest
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: |
+          ${{ github.workspace }}/.dist/*.exe
+          ${{ github.workspace }}/.dist/*.zip
+          ${{ github.workspace }}/.dist/*.checksum.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Release
       uses: softprops/action-gh-release@v2
