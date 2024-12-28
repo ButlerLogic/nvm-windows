@@ -79,13 +79,17 @@ jobs:
       with:
         path: |
           ~/go/bin
-        key: ${{ runner.os }}-qgo-${{ env.QUIKGO_VERSION }}
+        key: ${{ runner.os }}-qgo-v${{ env.QUIKGO_VERSION }}
         restore-keys: |
           ${{ runner.os }}-qgo-
 
     - name: Install QuikGo
       run: |
-        go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
+        if !(go list -m github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}); then
+          go install github.com/quikdev/go/cmd/qgo@v${{ env.QUIKGO_VERSION }}
+        else
+          echo "QuikGo version ${{ env.QUIKGO_VERSION }} already installed."
+        fi
 
     - name: Confirm QuikGo Installation
       run: qgo --version
@@ -323,6 +327,7 @@ jobs:
       id: attest
       with:
         subject-path: |
+          ${{ github.workspace }}/bin/*.exe
           ${{ github.workspace }}/.dist/*.exe
           ${{ github.workspace }}/.dist/*.zip
           ${{ github.workspace }}/.dist/*.checksum.txt
@@ -342,8 +347,7 @@ jobs:
         make_latest: true
         append_body: true
         body: |
-          ### :lock: Attestation Report
-          [View the Attestation Report](${{ steps.attest.outputs.attestation-url }})
+          :lock: [Attestation Report](${{ steps.attest.outputs.attestation-url }})
 
   rollback:
     runs-on: ubuntu-latest
