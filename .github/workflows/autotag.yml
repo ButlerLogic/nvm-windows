@@ -41,9 +41,9 @@ jobs:
     - name: Import GPG Key
       uses: crazy-max/ghaction-import-gpg@v6.2.0
       with:
-        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        git-tag-gpgsign: true
+        git_tag_gpgsign: true
 
     - name: Create tag
       if: success() && steps.check_tag.outputs.tag_exists == 'false'
