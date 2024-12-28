@@ -55,14 +55,14 @@ jobs:
       id: release_notes
       run: |
         input_list="${{ steps.scan.outputs.results }}"
-        notes=":bulb: **Antivirus Report**\n\n"
+        notes="<br/>:bulb: **Antivirus Report**<br/><br/>"
 
         # Process each item in the list
         IFS=',' read -ra ITEMS <<< "$input_list"
         for item in "${ITEMS[@]}"; do
           filename=$(echo "$item" | cut -d'/' -f1)
           id=$(echo "$item" | cut -d'/' -f2)
-          notes="${notes}- [${filename}](https://www.virustotal.com/gui/file-analysis/${id})\n"
+          notes="${notes}- [${filename}](https://www.virustotal.com/gui/file-analysis/${id})<br/>"
         done
 
         # Output the result

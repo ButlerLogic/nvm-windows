@@ -351,7 +351,7 @@ jobs:
         make_latest: true
         append_body: true
         body: |
-          :lock: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**\n\n
+          :lock: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**<br/><br/>
 
   rollback:
     runs-on: ubuntu-latest
@@ -421,8 +421,6 @@ jobs:
           echo "No tag to delete."
           exit 1
         fi
-
-
 
         RELEASE_ID=$(gh release view "$TAG" --json id --jq '.id' || echo "")
         if [ -n "$RELEASE_ID" ]; then
