@@ -34,6 +34,7 @@ jobs:
         else
           echo "Tag ${{ env.version }} does not exist."
           echo "tag_exists=false" >> $GITHUB_ENV  # Set tag_exists to false in the environment
+        fi
 
     - name: Create and push tag using GITHUB_TOKEN
       if: env.tag_exists == 'false'
