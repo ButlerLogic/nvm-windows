@@ -24,13 +24,13 @@ jobs:
         echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
         echo "version=$VERSION" >> $GITHUB_ENV
-        echo "Version: $VERSION"
+        echo "recognized $VERSION"
         cd ../
 
     - name: Check if tag exists
       id: check_tag
       run: |
-        VERSION=${{ steps.read_version.outputs.version }}
+        VERSION=${{ env.version }}
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
           echo "Tag $VERSION already exists."
           echo "tag_exists=true" >> $GITHUB_ENV
@@ -50,7 +50,7 @@ jobs:
       uses: mathieudutour/github-tag-action@v6.2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        custom_tag: ${{ steps.read_version.outputs.version }}
+        custom_tag: ${{ env.version }}
         tag_prefix: ""
 
     - name: Display Tag
