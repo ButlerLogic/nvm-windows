@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      tag_name: ${{ steps.create_tag.outputs.tag_name }}
+      tag_name: ${{ steps.create_tag.outputs.tag_name}}
 
     steps:
     - name: Checkout code
@@ -21,60 +21,36 @@ jobs:
       id: read_version
       run: |
         cd ./src
-        echo "Identifying version..."
+        echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
-        echo "version=$VERSION" >> $GITHUB_ENV  # Set version as an environment variable
+        echo "::set-output name=version::$VERSION"
+        cd ../
 
     - name: Check if tag exists
       id: check_tag
       run: |
-        if git rev-parse "refs/tags/${{ env.version }}" >/dev/null 2>&1; then
-          echo "Tag ${{ env.version }} already exists."
-          echo "tag_exists=true" >> $GITHUB_ENV  # Set tag_exists to true in the environment
+        VERSION=${{ steps.read_version.outputs.version }}
+        if git rev-parse "$VERSION" >/dev/null 2>&1; then
+          echo "Tag $VERSION already exists."
+          echo "::set-output name=tag_exists::true"
         else
-          echo "Tag ${{ env.version }} does not exist."
-          echo "tag_exists=false" >> $GITHUB_ENV  # Set tag_exists to false in the environment
+          echo "Tag $VERSION does not exist."
+          echo "::set-output name=tag_exists::false"
         fi
 
-    - name: Create and push tag using GITHUB_TOKEN
-      if: env.tag_exists == 'false'
+    - name: Create tag
+      if: steps.check_tag.outputs.tag_exists == 'false'
       id: create_tag
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        custom_tag: ${{ steps.read_version.outputs.version }}
+
+    - name: Display Tag
+      if: success()
       run: |
-        echo "Creating tag ${{ env.version }}..."
-        curl -X POST \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/git/tags \
-          -d @- <<EOF
-        {
-          "tag": "${{ env.version }}",
-          "message": "Release version ${{ env.version }}",
-          "object": "$(git rev-parse HEAD)",
-          "type": "commit",
-          "tagger": {
-            "name": "${{ github.actor }}",
-            "email": "${{ github.actor }}@users.noreply.github.com",
-            "date": "$(date --utc +%Y-%m-%dT%H:%M:%SZ)"
-          }
-        }
-        EOF
-
-        echo "Pushing tag to remote..."
-        curl -X POST \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/git/refs \
-          -d @- <<EOF
-        {
-          "ref": "refs/tags/${{ env.version }}",
-          "sha": "$(git rev-parse HEAD)"
-        }
-        EOF
-
-        echo "tag_name=${{ env.version }}" >> $GITHUB_ENV  # Set the tag_name for later use in the workflow
-
-    - name: Output tag name
-      run: |
-        echo "Tag created: ${{ env.version }}"
+        echo "Tag created: ${{ steps.create_tag.outputs.new_tag }}"
+      # run: |
+      #   VERSION=${{ steps.read_version.outputs.version }}
+      #   git tag "$VERSION"
+      #   git push origin "$VERSION"
+      #   echo "$VERSION tag created."
