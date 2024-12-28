@@ -23,14 +23,13 @@ jobs:
         cd ./src
         echo identifying version...
         VERSION=$(jq -r '.version' manifest.json)
-        echo "version=$VERSION" >> $GITHUB_ENV
-        echo "recognized $VERSION"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
         cd ../
 
     - name: Check if tag exists
       id: check_tag
       run: |
-        VERSION=${{ env.version }}
+        VERSION=${{ steps.read_version.outputs.version }}
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
           echo "Tag $VERSION already exists."
           echo "tag_exists=true" >> $GITHUB_OUTPUT
@@ -39,26 +38,18 @@ jobs:
           echo "tag_exists=false" >> $GITHUB_OUTPUT
         fi
 
-    - name: test
-      run: |
-        echo ${{ steps.check_tag.outputs.tag_exists }}
-        echo ${{ steps.check_tag.outputs.tag_exists }} == 'false'
+    - name: Import GPG Key
+      uses: crazy-max/ghaction-import-gpg@v3
+      with:
+        key: ${{ secrets.GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        git_tag_gpgsign: true
 
     - name: Create tag
       if: steps.check_tag.outputs.tag_exists == 'false'
       id: create_tag
-      uses: mathieudutour/github-tag-action@v6.2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        custom_tag: ${{ env.version }}
-        tag_prefix: ""
-
-    - name: Display Tag
-      if: steps.create_tag.outputs.new_tag != ''
       run: |
-        echo "Tag created: ${{ steps.create_tag.outputs.new_tag }}"
-      # run: |
-      #   VERSION=${{ steps.read_version.outputs.version }}
-      #   git tag "$VERSION"
-      #   git push origin "$VERSION"
-      #   echo "$VERSION tag created."
+        VERSION=${{ steps.read_version.outputs.version }}
+        git tag -s "$VERSION"
+        git push origin "$VERSION"
+        echo "$VERSION tag created."
