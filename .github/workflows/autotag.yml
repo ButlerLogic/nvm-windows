@@ -51,6 +51,6 @@ jobs:
       id: create_tag
       run: |
         VERSION=${{ steps.read_version.outputs.version }}
-        git tag -s "$VERSION"
+        git tag -s "$VERSION" -m "Release $VERSION"
         git push origin "$VERSION"
         echo "$VERSION tag created."
