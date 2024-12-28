@@ -37,11 +37,11 @@ jobs:
     - name: List downloaded assets
       run: ls -alh ./
 
-    - name: Scan
+    - name: Scan with VirusTotal
       uses: WoozyMasta/virustotal-action@v1.0.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
         vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         file_globs: |
           *.exe
           *.zip
