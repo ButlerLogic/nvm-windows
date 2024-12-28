@@ -33,10 +33,10 @@ jobs:
         VERSION=${{ env.version }}
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
           echo "Tag $VERSION already exists."
-          echo "tag_exists=true" >> $GITHUB_ENV
+          echo "tag_exists=true" >> $GITHUB_OUTPUT
         else
           echo "Tag $VERSION does not exist."
-          echo "tag_exists=false" >> $GITHUB_ENV
+          echo "tag_exists=false" >> $GITHUB_OUTPUT
         fi
 
     - name: test
