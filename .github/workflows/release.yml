@@ -318,7 +318,7 @@ jobs:
         $hash.Hash | Out-File -FilePath $checksum -Encoding utf8
       shell: pwsh
 
-    - name: Attest
+    - name: Attestation
       uses: actions/attest-build-provenance@v2
       with:
         subject-path: |
