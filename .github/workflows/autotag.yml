@@ -43,7 +43,7 @@ jobs:
       with:
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
         passphrase: ${{ secrets.GPG_PASSPHRASE }}
-        git_tag_gpgsign: true
+        git-tag-gpgsign: true
 
     - name: Create tag
       if: success() && steps.check_tag.outputs.tag_exists == 'false'
