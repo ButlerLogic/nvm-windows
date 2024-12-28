@@ -351,7 +351,7 @@ jobs:
         make_latest: true
         append_body: true
         body: |
-          :lock: [Attestation Report](${{ steps.attest.outputs.attestation-url }})
+          :lock: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**\n\n
 
   rollback:
     runs-on: ubuntu-latest
