@@ -37,13 +37,22 @@ jobs:
     - name: List downloaded assets
       run: ls -alh ./
 
-    - name: Scan with VirusTotal
-      uses: crazy-max/ghaction-virustotal@v4
+    - name: Scan
+      uses: WoozyMasta/virustotal-action@v1.0.0
       with:
-        vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
-        files: |
-          *.exe
-          .exe$
-        update_release_body: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        request_rate: 4
+        vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+        file_globs: |
+          *.exe
+          *.zip
+
+    # - name: Scan with VirusTotal
+    #   uses: crazy-max/ghaction-virustotal@v4
+    #   with:
+    #     vt_api_key: ${{ secrets.VIRUSTOTAL_API_KEY }}
+    #     files: |
+    #       *.exe
+    #       .exe$
+    #     update_release_body: true
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     request_rate: 4
