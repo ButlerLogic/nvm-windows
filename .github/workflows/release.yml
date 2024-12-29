@@ -356,7 +356,7 @@ jobs:
       with:
         tag_name: ${{ env.TAG }}
         body: |
-          :office: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**<br/><br/>
+          <br/>:office: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**
         append_body: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
