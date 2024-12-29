@@ -56,7 +56,7 @@ jobs:
       id: release_notes
       run: |
         input_list="${{ steps.scan.outputs.results }}"
-        notes="<br/>:bulb: **Antivirus Report**<br/><ul>"
+        notes=":bulb: **Antivirus Report**<br/><ul>"
 
         # Process each item in the list
         IFS=',' read -ra ITEMS <<< "$input_list"
