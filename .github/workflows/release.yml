@@ -106,13 +106,13 @@ jobs:
         dir ${{ github.workspace }}\bin
         cd ..\
 
-    - name: Compress Executables
-      uses: crazy-max/ghaction-upx@v3
-      with:
-        version: latest
-        files: |
-          ${{ github.workspace }}/bin/*.exe
-        args: --brute
+    # - name: Compress Executables
+    #   uses: crazy-max/ghaction-upx@v3
+    #   with:
+    #     version: latest
+    #     files: |
+    #       ${{ github.workspace }}/bin/*.exe
+    #     args: --brute
 
     - name: Download Resource Hacker
       run: |
@@ -349,9 +349,17 @@ jobs:
         prerelease: false
         draft: false
         make_latest: true
-        append_body: true
+
+    - name: Add Attestation Report to Release Notes
+      if: success()
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ env.TAG }}
         body: |
-          :lock: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**<br/><br/>
+          :office: **[Attestation Report](${{ steps.attest.outputs.attestation-url }})**<br/><br/>
+        append_body: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   rollback:
     runs-on: ubuntu-latest
